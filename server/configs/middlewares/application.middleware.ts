@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { MESSAGES } from '../data';
 
-export interface IApplicationOutput {
+export interface IApplicationMiddlewareOutput {
   allowBasics: (req: Request, res: Response, next: NextFunction) => void;
   inversifyExpressServer: (
     err: Error,
@@ -28,7 +28,7 @@ const inversifyExpressServer = (
   res.status(500).send(MESSAGES.inversifyExpressServerError);
 };
 
-export const applicationMiddleware: IApplicationOutput = {
+export const applicationMiddleware: IApplicationMiddlewareOutput = {
   allowBasics,
   inversifyExpressServer,
 };
