@@ -1,5 +1,5 @@
 export enum ENVIRONMENT {
-  PORT = 3000,
+  PORT = 8080,
   DEVELOPMENT = 'development',
   PRODUCTION = 'production',
 }
