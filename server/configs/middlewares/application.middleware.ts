@@ -3,7 +3,7 @@ import { MESSAGES } from '../data';
 
 export interface IApplicationMiddlewareOutput {
   allowBasics: (req: Request, res: Response, next: NextFunction) => void;
-  inversifyExpressServer: (
+  expressServerError: (
     err: Error,
     request: Request,
     response: Response,
@@ -18,7 +18,7 @@ const allowBasics = (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
-const inversifyExpressServer = (
+const expressServerError = (
   err: Error,
   req: Request,
   res: Response,
@@ -30,5 +30,5 @@ const inversifyExpressServer = (
 
 export const applicationMiddleware: IApplicationMiddlewareOutput = {
   allowBasics,
-  inversifyExpressServer,
+  expressServerError,
 };

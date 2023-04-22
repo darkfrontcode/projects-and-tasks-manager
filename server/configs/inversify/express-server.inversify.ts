@@ -22,7 +22,7 @@ const server = (app: express.Express) => {
 };
 
 const error = (app: express.Express) => {
-  app.use(applicationMiddleware.inversifyExpressServer);
+  app.use(applicationMiddleware.expressServerError);
 };
 
 export const inversify: IInversify = {
