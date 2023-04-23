@@ -9,6 +9,13 @@ import { IProjectRepository, Identity } from "../interfaces";
 export class ProjectRepository implements IProjectRepository {
   private projects: Project[] = new Array<Project>();
 
+  private _autoIncrementId(): number {
+    const toMax = (prev: Project, next: Project) =>
+      prev.id > next.id ? prev : next;
+
+    return this.projects.reduce(toMax).id || 1;
+  }
+
   async list(): Promise<Array<Project>> {
     return await new Promise<Array<Project>>((resolve, reject) => {
       try {
@@ -32,9 +39,12 @@ export class ProjectRepository implements IProjectRepository {
     });
   }
 
-  async add(project: Project): Promise<boolean> {
+  async create(name: string): Promise<boolean> {
     return await new Promise<boolean>((resolve, reject) => {
       try {
+        const id = this._autoIncrementId();
+        const project = new Project(id, name);
+
         this.projects.push(project);
         resolve(true);
       } catch (err) {
@@ -47,7 +57,8 @@ export class ProjectRepository implements IProjectRepository {
     return await new Promise<boolean>((resolve, reject) => {
       try {
         const exclusion = (target: Identity<number>) => {
-          this.projects = this.projects.filter(({ id }) => target.id !== id);
+          const comparer = ({ id }: Project) => target.id !== id;
+          this.projects = this.projects.filter(comparer);
         };
 
         targets.forEach(exclusion);
