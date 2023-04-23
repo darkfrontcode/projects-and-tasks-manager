@@ -1,2 +1,2 @@
-export { Request } from "./request.interface";
+export { Request, RequestByQuery } from "./request.interface";
 export { Response } from "./response.interface";

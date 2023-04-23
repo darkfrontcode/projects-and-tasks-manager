@@ -1,2 +1,2 @@
 export { IExecute } from "./execute.interface";
-export { Identity } from "./identity.interface";
+export { Identity, IdentityQuery } from "./identity.interface";

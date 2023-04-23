@@ -10,10 +10,14 @@ import {
   SwaggerDefinitionConstant,
 } from "swagger-express-ts";
 
-import { Request, Response } from "../../application";
+import { Request, RequestByQuery, Response } from "../../application";
 
 import {
+  GetProjectById,
+  GetProjectByIdValidator,
+  IGetProjectByIdUseCase,
   IListProjectUseCase,
+  IdentityQuery,
   ListProject,
   ProjectMapper,
   ProjectResponse,
@@ -27,16 +31,24 @@ import {
 @injectable()
 export class ProjectsController {
   constructor(
-    @inject(ListProject.name)
-    private _listProject: IListProjectUseCase
+    @inject(ListProject.name) private _listProject: IListProjectUseCase,
+    @inject(GetProjectById.name) private _getProjectById: IGetProjectByIdUseCase
   ) {}
 
   @ApiOperationGet({
     description: "List all projects",
     responses: {
       200: {
+        description: "OK",
         model: "ProjectResponse",
         type: SwaggerDefinitionConstant.Response.Type.ARRAY,
+      },
+      204: {
+        description: "No Content",
+      },
+      400: {
+        description: "Bad Request",
+        type: SwaggerDefinitionConstant.Response.Type.STRING,
       },
     },
   })
@@ -47,8 +59,54 @@ export class ProjectsController {
     next: NextFunction
   ): Promise<void> {
     const projects = await this._listProject.execute();
-    const response = ProjectMapper.toResponse(projects);
+    const response = ProjectMapper.toListResponse(projects);
 
-    res.status(StatusCodes.OK).json(response);
+    const status =
+      response.length > 0 ? StatusCodes.OK : StatusCodes.NO_CONTENT;
+
+    res.status(status).json(response);
+  }
+
+  @ApiOperationGet({
+    description: "Get an project by id",
+    responses: {
+      200: {
+        description: "OK",
+        type: SwaggerDefinitionConstant.Response.Type.OBJECT,
+        model: "ProjectResponse",
+      },
+      400: {
+        description: "Bad Request",
+        type: SwaggerDefinitionConstant.Response.Type.STRING,
+      },
+    },
+    path: "/:id",
+    parameters: {
+      query: {
+        id: {
+          description: "Project id",
+          required: true,
+          type: SwaggerDefinitionConstant.Response.Type.STRING,
+        },
+      },
+    },
+  })
+  @httpGet("/:id")
+  async getById(
+    req: RequestByQuery<IdentityQuery>,
+    res: Response<ProjectResponse>,
+    next: NextFunction
+  ): Promise<void> {
+    const validator = await new GetProjectByIdValidator().validate(req.query);
+
+    if (validator.valid) {
+      const project = await this._getProjectById.execute(validator.data);
+      const response = ProjectMapper.toResponse(project);
+
+      res.status(StatusCodes.OK).json(response);
+      return;
+    }
+
+    res.status(StatusCodes.BAD_REQUEST).send(validator.message);
   }
 }

@@ -5,19 +5,21 @@ import { TaskMapper } from "./task.mapper";
 export class ProjectMapper {
   private constructor() {}
 
-  static toResponse(projects: Project[]): ProjectResponse[] {
-    return projects.map((project) => {
-      const response = new ProjectResponse();
+  static toListResponse(projects: Project[]): ProjectResponse[] {
+    return projects.map((project) => this.toResponse(project));
+  }
 
-      response.id = project.id;
-      response.name = project.name;
+  static toResponse(project: Project): ProjectResponse {
+    const response = new ProjectResponse();
 
-      if (project.hasTasks()) {
-        const tasks = TaskMapper.toResponse(project.tasks);
-        response.tasks = tasks;
-      }
+    response.id = project.id;
+    response.name = project.name;
 
-      return response;
-    });
+    if (project.hasTasks()) {
+      const tasks = TaskMapper.toResponse(project.tasks);
+      response.tasks = tasks;
+    }
+
+    return response;
   }
 }
