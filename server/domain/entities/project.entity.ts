@@ -20,6 +20,13 @@ export class Project implements Identity<number> {
     return this._tasks;
   }
 
+  set fromPartial(partial: PartialProject) {
+    const { name, tasks } = partial;
+
+    this._name = name || this._name;
+    this._tasks = tasks || this._tasks;
+  }
+
   addTask(task: Task) {
     this._tasks.push(task);
   }

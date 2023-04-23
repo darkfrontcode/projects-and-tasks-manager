@@ -2,11 +2,19 @@ import { Container } from "inversify";
 import { interfaces, TYPE } from "inversify-express-utils";
 
 import {
+  DeleteProjectById,
+  EditProjectById,
+  GetProjectById,
+  ICreateProjectUseCase,
+  IDeleteProjectByIdUseCase,
+  IEditProjectByIdUseCase,
+  IGetProjectByIdUseCase,
   IListProjectUseCase,
   IProjectRepository,
   ListProject,
   ProjectRepository,
 } from "../../domain";
+import { CreateProject } from "../../domain/use-cases/project/create.case";
 import { ProjectsController } from "../../presentation";
 
 export module IOC {
@@ -29,6 +37,26 @@ export module IOC {
     container
       .bind<IListProjectUseCase>(ListProject.name)
       .to(ListProject)
+      .inRequestScope();
+
+    container
+      .bind<IGetProjectByIdUseCase>(GetProjectById.name)
+      .to(GetProjectById)
+      .inRequestScope();
+
+    container
+      .bind<ICreateProjectUseCase>(CreateProject.name)
+      .to(CreateProject)
+      .inRequestScope();
+
+    container
+      .bind<IDeleteProjectByIdUseCase>(DeleteProjectById.name)
+      .to(DeleteProjectById)
+      .inRequestScope();
+
+    container
+      .bind<IEditProjectByIdUseCase>(EditProjectById.name)
+      .to(EditProjectById)
       .inRequestScope();
 
     /* ==========================================================================
