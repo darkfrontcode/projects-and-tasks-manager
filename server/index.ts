@@ -1,9 +1,14 @@
-import 'reflect-metadata';
+import "reflect-metadata";
 
-import { InversifyExpressServer } from 'inversify-express-utils';
-import { IOC } from './ioc';
+import { InversifyExpressServer } from "inversify-express-utils";
 
-import { ApplicationResponse, ENVIRONMENT, EVENT, inversify } from './configs';
+import {
+  ApplicationResponse,
+  ENVIRONMENT,
+  EVENT,
+  IOC,
+  inversify,
+} from "./application";
 
 /* ==========================================================================
 	-- Configs
