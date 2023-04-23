@@ -3,23 +3,28 @@ import "reflect-metadata";
 import { injectable } from "inversify";
 
 import { PartialProject, Project } from "../entities";
-import { IProjectRepository, Identity } from "../interfaces";
+import { IProjectRepository } from "../interfaces";
 
 @injectable()
 export class ProjectRepository implements IProjectRepository {
-  private projects: Project[] = new Array<Project>();
+  private _projects: Project[] = new Array<Project>();
 
   private _autoIncrementId(): number {
-    const toMax = (prev: Project, next: Project) =>
-      prev.id > next.id ? prev : next;
+    if (this._projects.length > 0) {
+      const toMax = (prev: Project, next: Project) =>
+        prev.id > next.id ? prev : next;
+      const { id } = this._projects.reduce(toMax);
 
-    return this.projects.reduce(toMax).id || 1;
+      return id + 1;
+    }
+
+    return 1;
   }
 
   async list(): Promise<Array<Project>> {
     return await new Promise<Array<Project>>((resolve, reject) => {
       try {
-        resolve(this.projects);
+        resolve(this._projects);
       } catch (err) {
         resolve(new Array<Project>());
       }
@@ -30,7 +35,7 @@ export class ProjectRepository implements IProjectRepository {
     return await new Promise<Project>((resolve, reject) => {
       try {
         const comparer = (project: Project) => project.id === id;
-        const project = this.projects.find(comparer);
+        const project = this._projects.find(comparer);
 
         resolve(project);
       } catch (err) {
@@ -45,7 +50,7 @@ export class ProjectRepository implements IProjectRepository {
         const id = this._autoIncrementId();
         const project = new Project(id, name);
 
-        this.projects.push(project);
+        this._projects.push(project);
         resolve(true);
       } catch (err) {
         resolve(false);
@@ -53,36 +58,43 @@ export class ProjectRepository implements IProjectRepository {
     });
   }
 
-  async remove(targets: Array<Identity<number>>): Promise<boolean> {
-    return await new Promise<boolean>((resolve, reject) => {
+  async remove(id: number): Promise<boolean> {
+    return await new Promise<boolean>(async (resolve, reject) => {
       try {
-        const exclusion = (target: Identity<number>) => {
-          const comparer = ({ id }: Project) => target.id !== id;
-          this.projects = this.projects.filter(comparer);
-        };
+        const valid = await this.find(id);
 
-        targets.forEach(exclusion);
+        if (valid) {
+          const comparer = (project: Project) => project.id !== id;
+          this._projects = this._projects.filter(comparer);
+          resolve(true);
+        }
 
-        resolve(true);
+        resolve(false);
       } catch (err) {
         resolve(false);
       }
     });
   }
 
-  async edit(target: PartialProject): Promise<boolean> {
-    return await new Promise<boolean>((resolve, reject) => {
+  async edit(partial: PartialProject): Promise<boolean> {
+    return await new Promise<boolean>(async (resolve, reject) => {
       try {
-        const merge = (project: Project) => {
-          if (project.id === target.id) {
-            return Object.assign(Project, project, target);
-          }
+        const valid = await this.find(partial.id);
 
-          return project;
-        };
+        if (valid) {
+          const merge = (project: Project) => {
+            if (project.id === partial.id) {
+              project.fromPartial = partial;
+            }
 
-        this.projects = this.projects.map(merge);
-        resolve(true);
+            return project;
+          };
+
+          this._projects = this._projects.map(merge);
+          resolve(true);
+        }
+
+        resolve(false);
       } catch (err) {
         resolve(false);
       }

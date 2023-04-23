@@ -20,8 +20,8 @@ export class EditProjectById implements IEditProjectByIdUseCase {
   async execute({
     id: stringId,
     name,
-  }: IdentityQuery & EditProjectRequest): Promise<void> {
+  }: IdentityQuery & EditProjectRequest): Promise<boolean> {
     const id = Number(stringId);
-    await this._projectRepository.edit({ id, name });
+    return await this._projectRepository.edit({ id, name });
   }
 }

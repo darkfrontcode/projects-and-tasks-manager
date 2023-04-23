@@ -30,7 +30,6 @@ import {
   CreateProjectValidator,
   DeleteProjectById,
   DeleteProjectByIdValidator,
-  DeleteProjectRequest,
   EditProjectById,
   EditProjectByIdValidator,
   EditProjectRequest,
@@ -98,9 +97,18 @@ export class ProjectsController {
 
     if (validator.valid) {
       const project = await this._getProjectById.execute(validator.data);
-      const response = ProjectMapper.toResponse(project);
 
-      res.status(StatusCodes.OK).json(response);
+      if (project) {
+        const response = ProjectMapper.toResponse(project);
+        res.status(StatusCodes.OK).json(response);
+
+        return;
+      }
+
+      res
+        .status(StatusCodes.NOT_FOUND)
+        .send(getReasonPhrase(StatusCodes.NOT_FOUND));
+
       return;
     }
 
@@ -132,22 +140,27 @@ export class ProjectsController {
   @ApiOperationDelete(projectDOC.deleteById)
   @httpDelete("/:id")
   async deleteById(
-    req: RequestByBody<DeleteProjectRequest>,
+    req: RequestByQuery<IdentityQuery>,
     res: Response<null>,
     next: NextFunction
   ): Promise<void> {
-    const validator = await new DeleteProjectByIdValidator().validate(
-      req.body.ids
-    );
+    const { id } = req.query;
+    const validator = await new DeleteProjectByIdValidator().validate({ id });
 
     if (validator.valid) {
-      await this._deleteProjectById.execute(validator.data);
+      const success = await this._deleteProjectById.execute(validator.data);
+
+      if (success) {
+        res
+          .status(StatusCodes.ACCEPTED)
+          .send(getReasonPhrase(StatusCodes.ACCEPTED));
+
+        return;
+      }
 
       res
-        .status(StatusCodes.ACCEPTED)
-        .send(getReasonPhrase(StatusCodes.ACCEPTED));
-
-      return;
+        .status(StatusCodes.NOT_FOUND)
+        .send(getReasonPhrase(StatusCodes.NOT_FOUND));
     }
 
     res.status(StatusCodes.BAD_REQUEST).send(validator.message);
@@ -169,12 +182,16 @@ export class ProjectsController {
     });
 
     if (validator.valid) {
-      await this._editProjectById.execute(validator.data);
+      const success = await this._editProjectById.execute(validator.data);
 
-      // prettier-ignore
+      if (success) {
+        res.status(StatusCodes.OK).send(getReasonPhrase(StatusCodes.OK));
+        return;
+      }
+
       res
-        .status(StatusCodes.OK)
-        .send(getReasonPhrase(StatusCodes.OK));
+        .status(StatusCodes.NOT_FOUND)
+        .send(getReasonPhrase(StatusCodes.NOT_FOUND));
 
       return;
     }
