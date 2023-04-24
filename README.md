@@ -2,18 +2,26 @@
 
 ### Tecnologies
 
-- Node
-- Express
-- Swagger
-- Typescript
-- Inversify
-- Yup
-- Chalk
+- Node ❤️
+- Express 🚋
+- Swagger 🍀
+- Typescript 🍒
+- Inversify 🍓
+- Yup 🍧
+- Chalk 🍭
 
-Comming soon..🎉
+Comming soon...🎉
 
-- jest
-- supertest
+- jest 🤡
+- supertest ✨
+
+### Methodologies
+
+- Clean Architecture 📘
+- Onion architecture 📕
+- Domain Driven Design ( DDD ) 📓
+- Design Patterns 📚
+- Inheritance and polymorphism 📒
 
 <p align="center">
 	<img src="https://github.com/darkfrontcode/projects-and-tasks-manager/blob/main/midias/adventure-time.jpg">
