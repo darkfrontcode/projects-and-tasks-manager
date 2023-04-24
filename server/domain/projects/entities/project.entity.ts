@@ -31,6 +31,10 @@ export class Project implements Identity<number> {
     this._tasks.push(task);
   }
 
+  reflectTasks(tasks: Task[]) {
+    this._tasks = tasks;
+  }
+
   removeTask(id: number) {
     const remove = (task: Task) => task.id !== id;
     this._tasks = this._tasks.filter(remove);

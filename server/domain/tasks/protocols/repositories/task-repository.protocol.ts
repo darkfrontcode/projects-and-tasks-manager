@@ -9,4 +9,5 @@ export interface ITaskRepository {
   edit(partial: PartialTask): Promise<boolean>;
   changeState(id: number, state: TaskState): Promise<boolean>;
   attachToProject(id: number, projectId: number): Promise<boolean>;
+  findByProjectId(id: number): Promise<Task[]>;
 }

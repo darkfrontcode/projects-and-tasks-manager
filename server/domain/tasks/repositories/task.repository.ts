@@ -151,4 +151,16 @@ export class TaskRepository implements ITaskRepository {
       }
     });
   }
+
+  async findByProjectId(id: number): Promise<Task[]> {
+    return await new Promise<Task[]>(async (resolve, reject) => {
+      try {
+        const byProjectId = (task: Task) => task.projectId === id;
+        const tasks = this._task.filter(byProjectId);
+        resolve(tasks);
+      } catch (err) {
+        resolve([]);
+      }
+    });
+  }
 }
