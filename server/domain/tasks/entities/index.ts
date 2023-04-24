@@ -1,1 +1,1 @@
-export { Task } from "./task.entity";
+export { PartialTask, Task } from "./task.entity";

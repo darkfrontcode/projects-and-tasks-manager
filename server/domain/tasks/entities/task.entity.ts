@@ -35,6 +35,16 @@ export class Task implements Identity<number> {
     return this._date;
   }
 
+  set fromPartial(partial: PartialTask) {
+    const { projectId, name, state, manager, date } = partial;
+
+    this._projectId = projectId || this._projectId;
+    this._name = name || this._name;
+    this._state = state || this._state;
+    this._manager = manager || this._manager;
+    this._date = date || this._date;
+  }
+
   change(state: TaskState) {
     this._state = state;
   }
@@ -47,3 +57,5 @@ export class Task implements Identity<number> {
     return this._manager !== String();
   }
 }
+
+export type PartialTask = Identity<number> & Partial<Omit<Task, "id">>;
