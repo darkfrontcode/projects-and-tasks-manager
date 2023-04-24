@@ -1,6 +1,70 @@
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { SwaggerDefinitionConstant } from "swagger-express-ts";
 
+const attachToProject = {
+  description: "Attach a task to a project",
+  responses: {
+    200: {
+      description: getReasonPhrase(StatusCodes.OK),
+    },
+    400: {
+      description: getReasonPhrase(StatusCodes.BAD_REQUEST),
+      type: SwaggerDefinitionConstant.Response.Type.STRING,
+    },
+    404: {
+      description: getReasonPhrase(StatusCodes.NOT_FOUND),
+      type: SwaggerDefinitionConstant.Response.Type.STRING,
+    },
+  },
+  path: "/:id/attach-to-project",
+  parameters: {
+    query: {
+      id: {
+        description: "Task id",
+        required: true,
+        type: SwaggerDefinitionConstant.Response.Type.STRING,
+      },
+    },
+    body: {
+      description: "A request wrapper to attach to a project",
+      model: "AttachTaskToProjectRequest",
+      required: true,
+    },
+  },
+};
+
+const changeState = {
+  description: "Edit a task",
+  responses: {
+    200: {
+      description: getReasonPhrase(StatusCodes.OK),
+    },
+    400: {
+      description: getReasonPhrase(StatusCodes.BAD_REQUEST),
+      type: SwaggerDefinitionConstant.Response.Type.STRING,
+    },
+    404: {
+      description: getReasonPhrase(StatusCodes.NOT_FOUND),
+      type: SwaggerDefinitionConstant.Response.Type.STRING,
+    },
+  },
+  path: "/:id/change-state",
+  parameters: {
+    query: {
+      id: {
+        description: "Task id",
+        required: true,
+        type: SwaggerDefinitionConstant.Response.Type.STRING,
+      },
+    },
+    body: {
+      description: "A request wrapper to change task state",
+      model: "ChangeTaskStateRequest",
+      required: true,
+    },
+  },
+};
+
 const editById = {
   description: "Edit a task",
   responses: {
@@ -133,4 +197,6 @@ export const taskDOC = {
   create,
   deleteById,
   editById,
+  changeState,
+  attachToProject,
 };

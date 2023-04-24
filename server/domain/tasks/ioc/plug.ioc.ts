@@ -1,6 +1,8 @@
 import { Container } from "inversify";
 import { IOCPlug } from "../../../application";
 import {
+  IAttachTaskToProjectUseCase,
+  IChangeTaskStateUseCase,
   ICreateTaskUseCase,
   IDeleteTaskByIdUseCase,
   IEditTaskByIdUseCase,
@@ -10,12 +12,14 @@ import {
 } from "../protocols";
 import { TaskRepository } from "../repositories";
 import {
+  AttachTaskToProject,
   CreateTask,
   DeleteTaskById,
   EditTaskById,
   GetTaskById,
   ListTasks,
 } from "../use-cases";
+import { ChangeTaskState } from "../use-cases/change-state.case";
 
 export class TaskPlugIOC implements IOCPlug {
   plug(container: Container) {
@@ -55,6 +59,16 @@ export class TaskPlugIOC implements IOCPlug {
     container
       .bind<IEditTaskByIdUseCase>(EditTaskById.name)
       .to(EditTaskById)
+      .inRequestScope();
+
+    container
+      .bind<IChangeTaskStateUseCase>(ChangeTaskState.name)
+      .to(ChangeTaskState)
+      .inRequestScope();
+
+    container
+      .bind<IAttachTaskToProjectUseCase>(AttachTaskToProject.name)
+      .to(AttachTaskToProject)
       .inRequestScope();
   }
 }
