@@ -1,6 +1,33 @@
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { SwaggerDefinitionConstant } from "swagger-express-ts";
 
+const deleteById = {
+  description: "Delete task by id",
+  responses: {
+    202: {
+      description: getReasonPhrase(StatusCodes.ACCEPTED),
+    },
+    400: {
+      description: getReasonPhrase(StatusCodes.BAD_REQUEST),
+      type: SwaggerDefinitionConstant.Response.Type.STRING,
+    },
+    404: {
+      description: getReasonPhrase(StatusCodes.NOT_FOUND),
+      type: SwaggerDefinitionConstant.Response.Type.STRING,
+    },
+  },
+  path: "/:id",
+  parameters: {
+    query: {
+      id: {
+        description: "Task id",
+        required: true,
+        type: SwaggerDefinitionConstant.Response.Type.STRING,
+      },
+    },
+  },
+};
+
 const create = {
   description: "Create a task",
   responses: {
@@ -72,4 +99,5 @@ export const taskDOC = {
   list,
   getById,
   create,
+  deleteById,
 };

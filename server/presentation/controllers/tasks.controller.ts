@@ -3,8 +3,18 @@ import "reflect-metadata";
 import { NextFunction } from "express";
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { inject, injectable } from "inversify";
-import { controller, httpGet, httpPost } from "inversify-express-utils";
-import { ApiOperationGet, ApiOperationPost, ApiPath } from "swagger-express-ts";
+import {
+  controller,
+  httpDelete,
+  httpGet,
+  httpPost,
+} from "inversify-express-utils";
+import {
+  ApiOperationDelete,
+  ApiOperationGet,
+  ApiOperationPost,
+  ApiPath,
+} from "swagger-express-ts";
 
 import { RequestByBody, RequestByQuery, Response } from "../../application";
 
@@ -12,9 +22,12 @@ import {
   CreateTask,
   CreateTaskRequest,
   CreateTaskValidator,
+  DeleteTaskById,
+  DeleteTaskByIdValidator,
   GetTaskById,
   GetTaskByIdValidator,
   ICreateTaskUseCase,
+  IDeleteTaskByIdUseCase,
   IGetTaskByIdUseCase,
   IListTasksUseCase,
   IdentityQuery,
@@ -35,7 +48,8 @@ export class TasksController {
   constructor(
     @inject(ListTasks.name) private _listTasks: IListTasksUseCase,
     @inject(GetTaskById.name) private _getTaskById: IGetTaskByIdUseCase,
-    @inject(CreateTask.name) private _createTask: ICreateTaskUseCase
+    @inject(CreateTask.name) private _createTask: ICreateTaskUseCase,
+    @inject(DeleteTaskById.name) private _deleteTaskById: IDeleteTaskByIdUseCase
   ) {}
 
   @ApiOperationGet(taskDOC.list)
@@ -104,6 +118,35 @@ export class TasksController {
         .send(getReasonPhrase(StatusCodes.CREATED));
 
       return;
+    }
+
+    res.status(StatusCodes.BAD_REQUEST).send(validator.message);
+  }
+
+  @ApiOperationDelete(taskDOC.deleteById)
+  @httpDelete("/:id")
+  async deleteById(
+    req: RequestByQuery<IdentityQuery>,
+    res: Response<null>,
+    next: NextFunction
+  ): Promise<void> {
+    const { id } = req.query;
+    const validator = await new DeleteTaskByIdValidator().validate({ id });
+
+    if (validator.valid) {
+      const success = await this._deleteTaskById.execute(validator.data);
+
+      if (success) {
+        res
+          .status(StatusCodes.ACCEPTED)
+          .send(getReasonPhrase(StatusCodes.ACCEPTED));
+
+        return;
+      }
+
+      res
+        .status(StatusCodes.NOT_FOUND)
+        .send(getReasonPhrase(StatusCodes.NOT_FOUND));
     }
 
     res.status(StatusCodes.BAD_REQUEST).send(validator.message);
