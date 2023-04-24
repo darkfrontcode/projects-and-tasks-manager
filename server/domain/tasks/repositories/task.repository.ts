@@ -3,6 +3,7 @@ import "reflect-metadata";
 import { injectable } from "inversify";
 
 import { PartialTask, Task } from "../entities";
+import { TaskState } from "../enums";
 import { ITaskRepository } from "../protocols";
 
 @injectable()
@@ -91,6 +92,31 @@ export class TaskRepository implements ITaskRepository {
           };
 
           this._task = this._task.map(merge);
+          resolve(true);
+        }
+
+        resolve(false);
+      } catch (err) {
+        resolve(false);
+      }
+    });
+  }
+
+  async changeState(id: number, state: TaskState): Promise<boolean> {
+    return await new Promise<boolean>(async (resolve, reject) => {
+      try {
+        const valid = await this.find(id);
+
+        if (valid) {
+          const toNextState = (task: Task) => {
+            if (task.id === id) {
+              task.changeState(state);
+            }
+
+            return task;
+          };
+
+          this._task = this._task.map(toNextState);
           resolve(true);
         }
 

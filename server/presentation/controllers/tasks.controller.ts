@@ -26,6 +26,8 @@ import {
 } from "../../application";
 
 import {
+  ChangeTaskStateRequest,
+  ChangeTaskStateValidator,
   CreateTask,
   CreateTaskRequest,
   CreateTaskValidator,
@@ -36,6 +38,7 @@ import {
   EditTaskRequest,
   GetTaskById,
   GetTaskByIdValidator,
+  IChangeTaskStateUseCase,
   ICreateTaskUseCase,
   IDeleteTaskByIdUseCase,
   IEditTaskByIdUseCase,
@@ -46,6 +49,7 @@ import {
   TaskMapper,
   TaskResponse,
 } from "../../domain";
+import { ChangeTaskState } from "../../domain/tasks/use-cases/change-state.case";
 import { taskDOC } from "./documentation";
 
 @ApiPath({
@@ -61,7 +65,8 @@ export class TasksController {
     @inject(GetTaskById.name) private _getTaskById: IGetTaskByIdUseCase,
     @inject(CreateTask.name) private _createTask: ICreateTaskUseCase,
     @inject(DeleteTaskById.name) private _deleteTaskById: IDeleteTaskByIdUseCase,
-    @inject(EditTaskById.name) private _editTaskById: IEditTaskByIdUseCase
+    @inject(EditTaskById.name) private _editTaskById: IEditTaskByIdUseCase,
+    @inject(ChangeTaskState.name) private _changeTaskState: IChangeTaskStateUseCase
   ) {}
 
   @ApiOperationGet(taskDOC.list)
@@ -183,6 +188,39 @@ export class TasksController {
 
     if (validator.valid) {
       const success = await this._editTaskById.execute(validator.data);
+
+      if (success) {
+        res.status(StatusCodes.OK).send(getReasonPhrase(StatusCodes.OK));
+        return;
+      }
+
+      res
+        .status(StatusCodes.NOT_FOUND)
+        .send(getReasonPhrase(StatusCodes.NOT_FOUND));
+
+      return;
+    }
+
+    res.status(StatusCodes.BAD_REQUEST).send(validator.message);
+  }
+
+  @ApiOperationPost(taskDOC.changeState)
+  @httpPost("/:id/change-state")
+  async changeState(
+    req: Request<IdentityQuery, ChangeTaskStateRequest>,
+    res: Response<null>,
+    next: NextFunction
+  ): Promise<void> {
+    const { id } = req.query;
+    const { state } = req.body;
+
+    const validator = await new ChangeTaskStateValidator().validate({
+      id,
+      state,
+    });
+
+    if (validator.valid) {
+      const success = await this._changeTaskState.execute(validator.data);
 
       if (success) {
         res.status(StatusCodes.OK).send(getReasonPhrase(StatusCodes.OK));
