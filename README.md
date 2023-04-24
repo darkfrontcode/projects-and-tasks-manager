@@ -1,3 +1,5 @@
-# projects-and-tasks-manager
+# A simple manager for projects and tasks
 
-[Edit on StackBlitz ⚡️](https://stackblitz.com/edit/ts-node-cbtxg8)
+<p align="center">
+	<img src="https://github.com/darkfrontcode/projects-and-tasks-manager/blob/main/midias/adventure-time.jpg">
+</p>
