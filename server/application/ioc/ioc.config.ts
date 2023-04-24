@@ -1,63 +1,22 @@
 import { Container } from "inversify";
 import { interfaces, TYPE } from "inversify-express-utils";
 
-import {
-  CreateProject,
-  DeleteProjectById,
-  EditProjectById,
-  GetProjectById,
-  ICreateProjectUseCase,
-  IDeleteProjectByIdUseCase,
-  IEditProjectByIdUseCase,
-  IGetProjectByIdUseCase,
-  IListProjectUseCase,
-  IProjectRepository,
-  ListProject,
-  ProjectRepository,
-} from "../../domain";
-import { ProjectsController } from "../../presentation";
+import { ProjectPlugIOC, TaskPlugIOC } from "../../domain";
+import { ProjectsController, TasksController } from "../../presentation";
 
 export module IOC {
   export const container = new Container();
 
   export function configureContainer(): Container {
-    /* ==========================================================================
-      -- Repositories
-    ========================================================================== */
-
-    container
-      .bind<IProjectRepository>(ProjectRepository.name)
-      .to(ProjectRepository)
-      .inSingletonScope();
+    const project = new ProjectPlugIOC();
+    const task = new TaskPlugIOC();
 
     /* ==========================================================================
-      -- Use cases
+      -- Domain Plugs
     ========================================================================== */
 
-    container
-      .bind<IListProjectUseCase>(ListProject.name)
-      .to(ListProject)
-      .inRequestScope();
-
-    container
-      .bind<IGetProjectByIdUseCase>(GetProjectById.name)
-      .to(GetProjectById)
-      .inRequestScope();
-
-    container
-      .bind<ICreateProjectUseCase>(CreateProject.name)
-      .to(CreateProject)
-      .inRequestScope();
-
-    container
-      .bind<IDeleteProjectByIdUseCase>(DeleteProjectById.name)
-      .to(DeleteProjectById)
-      .inRequestScope();
-
-    container
-      .bind<IEditProjectByIdUseCase>(EditProjectById.name)
-      .to(EditProjectById)
-      .inRequestScope();
+    project.plug(container);
+    task.plug(container);
 
     /* ==========================================================================
       -- Controllers
@@ -67,6 +26,11 @@ export module IOC {
       .bind<interfaces.Controller>(TYPE.Controller)
       .to(ProjectsController)
       .whenTargetNamed(ProjectsController.name);
+
+    container
+      .bind<interfaces.Controller>(TYPE.Controller)
+      .to(TasksController)
+      .whenTargetNamed(TasksController.name);
 
     return container;
   }

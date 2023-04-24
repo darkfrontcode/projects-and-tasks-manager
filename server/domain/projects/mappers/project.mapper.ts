@@ -16,7 +16,7 @@ export class ProjectMapper {
     response.name = project.name;
 
     if (project.hasTasks()) {
-      const tasks = TaskMapper.toResponse(project.tasks);
+      const tasks = TaskMapper.toListResponse(project.tasks);
       response.tasks = tasks;
     }
 

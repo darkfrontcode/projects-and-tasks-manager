@@ -2,11 +2,12 @@ import { Identity } from "../../shared";
 import { TaskState } from "../enums";
 
 export class Task implements Identity<number> {
+  private _projectId: number;
+  private _state: TaskState = TaskState.TODO;
+
   constructor(
-    private _projectId: number,
     private _id: number,
     private _name: string,
-    private _state: TaskState,
     private _manager: string,
     private _date: Date = new Date()
   ) {}
@@ -35,7 +36,21 @@ export class Task implements Identity<number> {
     return this._date;
   }
 
-  change(state: TaskState) {
+  set fromPartial(partial: PartialTask) {
+    const { projectId, name, state, manager, date } = partial;
+
+    this._projectId = projectId || this._projectId;
+    this._name = name || this._name;
+    this._state = state || this._state;
+    this._manager = manager || this._manager;
+    this._date = date || this._date;
+  }
+
+  addProjectId(projectId: number) {
+    this._projectId = projectId;
+  }
+
+  changeState(state: TaskState) {
     this._state = state;
   }
 
@@ -47,3 +62,5 @@ export class Task implements Identity<number> {
     return this._manager !== String();
   }
 }
+
+export type PartialTask = Identity<number> & Partial<Omit<Task, "id">>;
