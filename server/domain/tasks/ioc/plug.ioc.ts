@@ -3,6 +3,7 @@ import { IOCPlug } from "../../../application";
 import {
   ICreateTaskUseCase,
   IDeleteTaskByIdUseCase,
+  IEditTaskByIdUseCase,
   IGetTaskByIdUseCase,
   IListTasksUseCase,
   ITaskRepository,
@@ -11,6 +12,7 @@ import { TaskRepository } from "../repositories";
 import {
   CreateTask,
   DeleteTaskById,
+  EditTaskById,
   GetTaskById,
   ListTasks,
 } from "../use-cases";
@@ -48,6 +50,11 @@ export class TaskPlugIOC implements IOCPlug {
     container
       .bind<IDeleteTaskByIdUseCase>(DeleteTaskById.name)
       .to(DeleteTaskById)
+      .inRequestScope();
+
+    container
+      .bind<IEditTaskByIdUseCase>(EditTaskById.name)
+      .to(EditTaskById)
       .inRequestScope();
   }
 }

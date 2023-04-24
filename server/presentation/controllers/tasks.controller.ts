@@ -8,15 +8,22 @@ import {
   httpDelete,
   httpGet,
   httpPost,
+  httpPut,
 } from "inversify-express-utils";
 import {
   ApiOperationDelete,
   ApiOperationGet,
   ApiOperationPost,
+  ApiOperationPut,
   ApiPath,
 } from "swagger-express-ts";
 
-import { RequestByBody, RequestByQuery, Response } from "../../application";
+import {
+  Request,
+  RequestByBody,
+  RequestByQuery,
+  Response,
+} from "../../application";
 
 import {
   CreateTask,
@@ -24,10 +31,14 @@ import {
   CreateTaskValidator,
   DeleteTaskById,
   DeleteTaskByIdValidator,
+  EditTaskById,
+  EditTaskByIdValidator,
+  EditTaskRequest,
   GetTaskById,
   GetTaskByIdValidator,
   ICreateTaskUseCase,
   IDeleteTaskByIdUseCase,
+  IEditTaskByIdUseCase,
   IGetTaskByIdUseCase,
   IListTasksUseCase,
   IdentityQuery,
@@ -49,7 +60,8 @@ export class TasksController {
     @inject(ListTasks.name) private _listTasks: IListTasksUseCase,
     @inject(GetTaskById.name) private _getTaskById: IGetTaskByIdUseCase,
     @inject(CreateTask.name) private _createTask: ICreateTaskUseCase,
-    @inject(DeleteTaskById.name) private _deleteTaskById: IDeleteTaskByIdUseCase
+    @inject(DeleteTaskById.name) private _deleteTaskById: IDeleteTaskByIdUseCase,
+    @inject(EditTaskById.name) private _editTaskById: IEditTaskByIdUseCase
   ) {}
 
   @ApiOperationGet(taskDOC.list)
@@ -147,6 +159,41 @@ export class TasksController {
       res
         .status(StatusCodes.NOT_FOUND)
         .send(getReasonPhrase(StatusCodes.NOT_FOUND));
+    }
+
+    res.status(StatusCodes.BAD_REQUEST).send(validator.message);
+  }
+
+  @ApiOperationPut(taskDOC.editById)
+  @httpPut("/:id")
+  async editById(
+    req: Request<IdentityQuery, EditTaskRequest>,
+    res: Response<null>,
+    next: NextFunction
+  ): Promise<void> {
+    const { id } = req.query;
+    const { name, manager, date } = req.body;
+
+    const validator = await new EditTaskByIdValidator().validate({
+      id,
+      name,
+      manager,
+      date,
+    });
+
+    if (validator.valid) {
+      const success = await this._editTaskById.execute(validator.data);
+
+      if (success) {
+        res.status(StatusCodes.OK).send(getReasonPhrase(StatusCodes.OK));
+        return;
+      }
+
+      res
+        .status(StatusCodes.NOT_FOUND)
+        .send(getReasonPhrase(StatusCodes.NOT_FOUND));
+
+      return;
     }
 
     res.status(StatusCodes.BAD_REQUEST).send(validator.message);

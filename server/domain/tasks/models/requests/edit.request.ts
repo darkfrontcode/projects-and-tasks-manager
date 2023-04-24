@@ -5,10 +5,10 @@ import {
 } from "swagger-express-ts";
 
 @ApiModel({
-  name: "CreateTaskRequest",
-  description: "A request wrapper to create a Task",
+  name: "EditTaskRequest",
+  description: "A request wrapper to edit a Task",
 })
-export class CreateTaskRequest {
+export class EditTaskRequest {
   @ApiModelProperty({
     description: "The name of your task",
     type: SwaggerDefinitionConstant.STRING,

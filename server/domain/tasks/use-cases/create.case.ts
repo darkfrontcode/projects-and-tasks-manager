@@ -12,7 +12,12 @@ export class CreateTask implements ICreateTaskUseCase {
     private _taskRepository: ITaskRepository
   ) {}
 
-  async execute({ name, manager, date }: CreateTaskRequest): Promise<void> {
+  async execute({
+    name,
+    manager,
+    date: stringDate,
+  }: CreateTaskRequest): Promise<void> {
+    const date = new Date(stringDate);
     await this._taskRepository.create(name, manager, date);
   }
 }
