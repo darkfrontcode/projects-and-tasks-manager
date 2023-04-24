@@ -1,9 +1,9 @@
-import * as express from 'express';
-import * as bodyParser from 'body-parser';
-import * as swagger from 'swagger-express-ts';
+import * as bodyParser from "body-parser";
+import * as express from "express";
+import * as swagger from "swagger-express-ts";
 
-import { applicationMiddleware } from '../middlewares';
-import { SWAGGER_INFO_OBJECT, SWAGGER_PATH } from '../swagger';
+import { applicationMiddleware } from "../middlewares";
+import { SWAGGER_INFO_OBJECT, SWAGGER_PATH } from "../swagger";
 
 export interface IInversify {
   config: {
@@ -19,6 +19,7 @@ const server = (app: express.Express) => {
   app.use(SWAGGER_PATH.URL, express.static(SWAGGER_PATH.NAME));
   app.use(SWAGGER_PATH.ASSETS, express.static(SWAGGER_PATH.STATIC));
   app.use(swagger.express(SWAGGER_INFO_OBJECT));
+  app.get("/", (req, res) => res.redirect(SWAGGER_PATH.URL));
 };
 
 const error = (app: express.Express) => {
