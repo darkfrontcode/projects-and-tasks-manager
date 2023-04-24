@@ -2,6 +2,7 @@ import { Container } from "inversify";
 import { interfaces, TYPE } from "inversify-express-utils";
 
 import {
+  CreateProject,
   DeleteProjectById,
   EditProjectById,
   GetProjectById,
@@ -14,7 +15,6 @@ import {
   ListProject,
   ProjectRepository,
 } from "../../domain";
-import { CreateProject } from "../../domain/use-cases/project/create.case";
 import { ProjectsController } from "../../presentation";
 
 export module IOC {
