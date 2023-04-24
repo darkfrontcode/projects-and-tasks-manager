@@ -1,3 +1,4 @@
+export { AttachTaskToProjectValidator } from "./attach-to-project.validator";
 export { ChangeTaskStateValidator } from "./change-state.validator";
 export { CreateTaskValidator } from "./create.validator";
 export { DeleteTaskByIdValidator } from "./delete.validator";

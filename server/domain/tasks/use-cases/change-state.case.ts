@@ -10,8 +10,7 @@ import { TaskRepository } from "../repositories";
 @injectable()
 export class ChangeTaskState implements IChangeTaskStateUseCase {
   constructor(
-    @inject(TaskRepository.name)
-    private _taskRepository: ITaskRepository
+    @inject(TaskRepository.name) private _taskRepository: ITaskRepository
   ) {}
 
   async execute({

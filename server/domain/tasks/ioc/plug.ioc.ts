@@ -1,6 +1,7 @@
 import { Container } from "inversify";
 import { IOCPlug } from "../../../application";
 import {
+  IAttachTaskToProjectUseCase,
   IChangeTaskStateUseCase,
   ICreateTaskUseCase,
   IDeleteTaskByIdUseCase,
@@ -11,6 +12,7 @@ import {
 } from "../protocols";
 import { TaskRepository } from "../repositories";
 import {
+  AttachTaskToProject,
   CreateTask,
   DeleteTaskById,
   EditTaskById,
@@ -62,6 +64,11 @@ export class TaskPlugIOC implements IOCPlug {
     container
       .bind<IChangeTaskStateUseCase>(ChangeTaskState.name)
       .to(ChangeTaskState)
+      .inRequestScope();
+
+    container
+      .bind<IAttachTaskToProjectUseCase>(AttachTaskToProject.name)
+      .to(AttachTaskToProject)
       .inRequestScope();
   }
 }

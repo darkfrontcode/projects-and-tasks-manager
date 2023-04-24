@@ -126,4 +126,29 @@ export class TaskRepository implements ITaskRepository {
       }
     });
   }
+
+  async attachToProject(id: number, projectId: number): Promise<boolean> {
+    return await new Promise<boolean>(async (resolve, reject) => {
+      try {
+        const valid = await this.find(id);
+
+        if (valid) {
+          const toAttachProjectId = (task: Task) => {
+            if (task.id === id) {
+              task.addProjectId(projectId);
+            }
+
+            return task;
+          };
+
+          this._task = this._task.map(toAttachProjectId);
+          resolve(true);
+        }
+
+        resolve(false);
+      } catch (err) {
+        resolve(false);
+      }
+    });
+  }
 }
