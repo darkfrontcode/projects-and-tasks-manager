@@ -3,7 +3,6 @@ import "reflect-metadata";
 import { injectable } from "inversify";
 
 import { PartialTask, Task } from "../entities";
-import { TaskState } from "../enums";
 import { ITaskRepository } from "../protocols";
 
 @injectable()
@@ -45,17 +44,11 @@ export class TaskRepository implements ITaskRepository {
     });
   }
 
-  async create(
-    projectId: number,
-    name: string,
-    state: TaskState,
-    manager: string,
-    date: Date
-  ): Promise<boolean> {
+  async create(name: string, manager: string, date: Date): Promise<boolean> {
     return await new Promise<boolean>((resolve, reject) => {
       try {
         const id = this._autoIncrementId();
-        const task = new Task(projectId, id, name, state, manager, date);
+        const task = new Task(id, name, manager, date);
 
         this._task.push(task);
         resolve(true);

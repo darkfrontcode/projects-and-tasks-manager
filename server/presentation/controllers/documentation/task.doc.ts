@@ -1,6 +1,26 @@
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { SwaggerDefinitionConstant } from "swagger-express-ts";
 
+const create = {
+  description: "Create a task",
+  responses: {
+    201: {
+      description: getReasonPhrase(StatusCodes.CREATED),
+    },
+    400: {
+      description: getReasonPhrase(StatusCodes.BAD_REQUEST),
+      type: SwaggerDefinitionConstant.Response.Type.STRING,
+    },
+  },
+  parameters: {
+    body: {
+      description: "A request wrapper to create a Task",
+      model: "CreateTaskRequest",
+      required: true,
+    },
+  },
+};
+
 const getById = {
   description: "Get a task by id",
   responses: {
@@ -51,4 +71,5 @@ const list = {
 export const taskDOC = {
   list,
   getById,
+  create,
 };

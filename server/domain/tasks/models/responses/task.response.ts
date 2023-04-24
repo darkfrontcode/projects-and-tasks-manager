@@ -27,9 +27,9 @@ export class TaskResponse {
   id: number;
 
   @ApiModelProperty({
-    description: "The name of the task",
-    example: ["Play", "Sleep", "Repeat"],
+    description: "The name of your task",
     type: SwaggerDefinitionConstant.STRING,
+    example: ["Dragon Punch", "Drive a car", "Backflip + Moon walking"],
     required: true,
   })
   name: string;

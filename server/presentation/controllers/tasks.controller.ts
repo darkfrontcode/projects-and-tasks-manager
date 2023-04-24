@@ -3,14 +3,18 @@ import "reflect-metadata";
 import { NextFunction } from "express";
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { inject, injectable } from "inversify";
-import { controller, httpGet } from "inversify-express-utils";
-import { ApiOperationGet, ApiPath } from "swagger-express-ts";
+import { controller, httpGet, httpPost } from "inversify-express-utils";
+import { ApiOperationGet, ApiOperationPost, ApiPath } from "swagger-express-ts";
 
 import { RequestByBody, RequestByQuery, Response } from "../../application";
 
 import {
+  CreateTask,
+  CreateTaskRequest,
+  CreateTaskValidator,
   GetTaskById,
   GetTaskByIdValidator,
+  ICreateTaskUseCase,
   IGetTaskByIdUseCase,
   IListTasksUseCase,
   IdentityQuery,
@@ -30,7 +34,8 @@ export class TasksController {
   // prettier-ignore
   constructor(
     @inject(ListTasks.name) private _listTasks: IListTasksUseCase,
-    @inject(GetTaskById.name) private _getTaskById: IGetTaskByIdUseCase
+    @inject(GetTaskById.name) private _getTaskById: IGetTaskByIdUseCase,
+    @inject(CreateTask.name) private _createTask: ICreateTaskUseCase
   ) {}
 
   @ApiOperationGet(taskDOC.list)
@@ -75,6 +80,28 @@ export class TasksController {
       res
         .status(StatusCodes.NOT_FOUND)
         .send(getReasonPhrase(StatusCodes.NOT_FOUND));
+
+      return;
+    }
+
+    res.status(StatusCodes.BAD_REQUEST).send(validator.message);
+  }
+
+  @ApiOperationPost(taskDOC.create)
+  @httpPost("/")
+  async create(
+    req: RequestByBody<CreateTaskRequest>,
+    res: Response<null>,
+    next: NextFunction
+  ): Promise<void> {
+    const validator = await new CreateTaskValidator().validate(req.body);
+
+    if (validator.valid) {
+      await this._createTask.execute(validator.data);
+
+      res
+        .status(StatusCodes.CREATED)
+        .send(getReasonPhrase(StatusCodes.CREATED));
 
       return;
     }

@@ -2,11 +2,12 @@ import { Identity } from "../../shared";
 import { TaskState } from "../enums";
 
 export class Task implements Identity<number> {
+  private _projectId: number;
+  private _state: TaskState = TaskState.TODO;
+
   constructor(
-    private _projectId: number,
     private _id: number,
     private _name: string,
-    private _state: TaskState,
     private _manager: string,
     private _date: Date = new Date()
   ) {}
@@ -45,7 +46,11 @@ export class Task implements Identity<number> {
     this._date = date || this._date;
   }
 
-  change(state: TaskState) {
+  addProjectId(projectId: number) {
+    this._projectId = projectId;
+  }
+
+  changeState(state: TaskState) {
     this._state = state;
   }
 
