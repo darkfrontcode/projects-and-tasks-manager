@@ -1,1 +1,2 @@
-export { IListTasksUseCase } from "./list.case";
+export { IGetTaskByIdUseCase } from "./get-by-id.protocol";
+export { IListTasksUseCase } from "./list.protocol";

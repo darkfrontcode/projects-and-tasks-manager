@@ -6,10 +6,14 @@ import { inject, injectable } from "inversify";
 import { controller, httpGet } from "inversify-express-utils";
 import { ApiOperationGet, ApiPath } from "swagger-express-ts";
 
-import { RequestByBody, Response } from "../../application";
+import { RequestByBody, RequestByQuery, Response } from "../../application";
 
 import {
+  GetTaskById,
+  GetTaskByIdValidator,
+  IGetTaskByIdUseCase,
   IListTasksUseCase,
+  IdentityQuery,
   ListTasks,
   TaskMapper,
   TaskResponse,
@@ -23,7 +27,11 @@ import { taskDOC } from "./documentation";
 @controller("/tasks")
 @injectable()
 export class TasksController {
-  constructor(@inject(ListTasks.name) private _listTasks: IListTasksUseCase) {}
+  // prettier-ignore
+  constructor(
+    @inject(ListTasks.name) private _listTasks: IListTasksUseCase,
+    @inject(GetTaskById.name) private _getTaskById: IGetTaskByIdUseCase
+  ) {}
 
   @ApiOperationGet(taskDOC.list)
   @httpGet("/")
@@ -43,5 +51,34 @@ export class TasksController {
     res
       .status(StatusCodes.NO_CONTENT)
       .send(getReasonPhrase(StatusCodes.NO_CONTENT));
+  }
+
+  @ApiOperationGet(taskDOC.getById)
+  @httpGet("/:id")
+  async getById(
+    req: RequestByQuery<IdentityQuery>,
+    res: Response<TaskResponse>,
+    next: NextFunction
+  ): Promise<void> {
+    const validator = await new GetTaskByIdValidator().validate(req.query);
+
+    if (validator.valid) {
+      const task = await this._getTaskById.execute(validator.data);
+
+      if (task) {
+        const response = TaskMapper.toResponse(task);
+        res.status(StatusCodes.OK).json(response);
+
+        return;
+      }
+
+      res
+        .status(StatusCodes.NOT_FOUND)
+        .send(getReasonPhrase(StatusCodes.NOT_FOUND));
+
+      return;
+    }
+
+    res.status(StatusCodes.BAD_REQUEST).send(validator.message);
   }
 }

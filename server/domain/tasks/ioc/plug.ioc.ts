@@ -1,8 +1,12 @@
 import { Container } from "inversify";
 import { IOCPlug } from "../../../application";
-import { IListTasksUseCase, ITaskRepository } from "../protocols";
+import {
+  IGetTaskByIdUseCase,
+  IListTasksUseCase,
+  ITaskRepository,
+} from "../protocols";
 import { TaskRepository } from "../repositories";
-import { ListTasks } from "../use-cases";
+import { GetTaskById, ListTasks } from "../use-cases";
 
 export class TaskPlugIOC implements IOCPlug {
   plug(container: Container) {
@@ -22,6 +26,11 @@ export class TaskPlugIOC implements IOCPlug {
     container
       .bind<IListTasksUseCase>(ListTasks.name)
       .to(ListTasks)
+      .inRequestScope();
+
+    container
+      .bind<IGetTaskByIdUseCase>(GetTaskById.name)
+      .to(GetTaskById)
       .inRequestScope();
   }
 }

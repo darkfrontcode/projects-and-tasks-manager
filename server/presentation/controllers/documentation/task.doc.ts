@@ -1,6 +1,35 @@
 import { StatusCodes, getReasonPhrase } from "http-status-codes";
 import { SwaggerDefinitionConstant } from "swagger-express-ts";
 
+const getById = {
+  description: "Get a task by id",
+  responses: {
+    200: {
+      description: getReasonPhrase(StatusCodes.OK),
+      type: SwaggerDefinitionConstant.Response.Type.OBJECT,
+      model: "TaskResponse",
+    },
+    400: {
+      description: getReasonPhrase(StatusCodes.BAD_REQUEST),
+      type: SwaggerDefinitionConstant.Response.Type.STRING,
+    },
+    404: {
+      description: getReasonPhrase(StatusCodes.NOT_FOUND),
+      type: SwaggerDefinitionConstant.Response.Type.STRING,
+    },
+  },
+  path: "/:id",
+  parameters: {
+    query: {
+      id: {
+        description: "Task id",
+        required: true,
+        type: SwaggerDefinitionConstant.Response.Type.STRING,
+      },
+    },
+  },
+};
+
 const list = {
   description: "List all tasks",
   responses: {
@@ -21,4 +50,5 @@ const list = {
 
 export const taskDOC = {
   list,
+  getById,
 };
