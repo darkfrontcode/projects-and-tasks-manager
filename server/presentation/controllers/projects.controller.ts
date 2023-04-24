@@ -26,6 +26,7 @@ import {
 } from "../../application";
 
 import {
+  CreateProject,
   CreateProjectRequest,
   CreateProjectValidator,
   DeleteProjectById,
@@ -45,7 +46,6 @@ import {
   ProjectMapper,
   ProjectResponse,
 } from "../../domain";
-import { CreateProject } from "../../domain/use-cases/project/create.case";
 import { projectDOC } from "./documentation";
 
 @ApiPath({
@@ -55,15 +55,13 @@ import { projectDOC } from "./documentation";
 @controller("/projects")
 @injectable()
 export class ProjectsController {
+  // prettier-ignore
   constructor(
     @inject(ListProject.name) private _listProject: IListProjectUseCase,
-    @inject(GetProjectById.name)
-    private _getProjectById: IGetProjectByIdUseCase,
+    @inject(GetProjectById.name) private _getProjectById: IGetProjectByIdUseCase,
     @inject(CreateProject.name) private _createProject: ICreateProjectUseCase,
-    @inject(DeleteProjectById.name)
-    private _deleteProjectById: IDeleteProjectByIdUseCase,
-    @inject(EditProjectById.name)
-    private _editProjectById: IEditProjectByIdUseCase
+    @inject(EditProjectById.name) private _editProjectById: IEditProjectByIdUseCase,
+    @inject(DeleteProjectById.name) private _deleteProjectById: IDeleteProjectByIdUseCase
   ) {}
 
   @ApiOperationGet(projectDOC.list)
